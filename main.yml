@@ -1,0 +1,102 @@
+Parameters:
+
+  ApplicationName:
+    Type: String
+    Default: MyApp
+    Description: Name of the AppConfig application
+  EnvironmentName:
+    Type: String
+    Default: Prod
+    Description: Name of the AppConfig environment
+  ConfigProfileName:
+    Type: String
+    Default: Conf-file
+    Description: Name of the AppConfig configuration profile
+  ServiceRoleName:
+    Type: String
+    Default: approleservice
+    Description: Name of the service role for S3 access
+  S3Url:
+    Type: String
+    Description: Enter S3 URL for Conf file
+
+  ClusterName:
+    Type: String
+    Default: demo-cluster
+    Description: Enter Cluster Name 
+  TaskDefinitionName:
+    Type: String
+    Default: test-task-definition
+    Description: Enter Task TaskDefinition Name 
+  Appname:
+    Type: String
+    Default: MyApp
+    Description: Enter App Name for pass app config value to ECS
+  EnvName:
+    Type: String
+    Default: Prod
+    Description: Enter Environment Name for pass app config value to ECS
+  ConfProName:
+    Type: String
+    Default: Conf-file
+    Description: Enter Configuration profile name for pass app config value to ECS
+  ClientID:
+    Type: String
+    Default: i-05a1251870fdef236
+    Description: Enter Client Id for pass app config value to ECS
+
+  ContainerName:
+    Type: String
+    Default: DemoAppContainer
+    Description: Enter Container Name
+  ContainerImageName:
+    Type: String
+    Default: httpd
+    Description: Enter Container Image Name
+  ContainerHostPort:
+    Type: Number
+    Default: 80
+    Description: Enter Container Host Port
+  ContainerPort:
+    Type: Number
+    Default: 80
+    Description: Enter Container Port
+
+Resources:
+
+  VpcsetupStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub https://appconfigcfscript.s3.ap-south-1.amazonaws.com/vpc.yml
+      TimeoutInMinutes: 50
+
+  AppConfigSetupStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: VpcsetupStack
+    Properties:
+      TemplateURL: !Sub https://appconfigcfscript.s3.ap-south-1.amazonaws.com/appconfig.yml
+      Parameters:
+        ApplicationName: !Ref ApplicationName
+        EnvironmentName: !Ref EnvironmentName
+        ConfigProfileName: !Ref ConfigProfileName
+        ServiceRoleName: !Ref ServiceRoleName
+        S3Url: !Ref S3Url
+      TimeoutInMinutes: 50
+
+  ECSSetupStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn: AppConfigSetupStack
+    Properties:
+      TemplateURL: !Sub https://appconfigcfscript.s3.ap-south-1.amazonaws.com/ecs.yml
+      Parameters:
+        ClusterName: !Ref ClusterName  
+        TaskDefinitionName: !Ref TaskDefinitionName
+        Appname: !Ref Appname
+        EnvName: !Ref EnvName
+        ConfProName: !Ref ConfProName
+        ClientID: !Ref ClientID
+        ContainerName: !Ref ContainerName
+        ContainerImageName: !Ref ContainerImageName
+        ContainerHostPort: !Ref ContainerHostPort
+        ContainerPort: !Ref ContainerPort
+      TimeoutInMinutes: 50

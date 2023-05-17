@@ -1,0 +1,87 @@
+Parameters:
+  ClusterName:
+    Type: String
+    Description: Enter Cluster Name 
+  TaskDefinitionName:
+    Type: String
+    Description: Enter Task TaskDefinition Name 
+  Appname:
+    Type: String
+    Description: Enter App Name
+  EnvName:
+    Type: String
+    Description: Enter Environment Name
+  ConfProName:
+    Type: String
+    Description: Enter Configuration profile name
+  ClientID:
+    Type: String
+    Description: Enter Client Id
+  ContainerName:
+    Type: String
+    Description: Enter Container Name
+  ContainerImageName:
+    Type: String
+    Description: Enter Container Image Name
+  ContainerHostPort:
+    Type: Number
+    Description: Enter Container Host Port
+  ContainerPort:
+    Type: Number
+    Description: Enter Container Port
+
+
+Resources: 
+ # Create Cluster
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Ref ClusterName
+
+  # Create Task Definition
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      RequiresCompatibilities:
+        - FARGATE
+      Family: !Ref TaskDefinitionName
+      ContainerDefinitions:
+        - Name: !Ref ContainerName
+          Image: !Ref ContainerImageName
+          Essential: 'true'
+          PortMappings:
+            - HostPort: !Ref ContainerHostPort
+              Protocol: tcp
+              ContainerPort: !Ref ContainerPort
+          Environment:
+            - Name: MY_APPLICATION
+              Value: !Ref Appname
+            - Name: MY_ENVIRONMENT
+              Value: !Ref EnvName
+            - Name: MY_CONFIGURATION
+              Value: !Ref ConfProName
+            - Name: MY_CLIENTID
+              Value: !Ref ClientID
+      NetworkMode: awsvpc
+      Memory: '0.5GB'
+      Cpu: '0.25 vCPU'
+      ExecutionRoleArn: arn:aws:iam::488189875832:role/ecsTaskExecutionRole
+
+  # Create Service
+  ECSservice:
+    Type: AWS::ECS::Service
+    DependsOn: TaskDefinition
+    Properties:
+      ServiceName: DemoAppService
+      Cluster: !Ref ECSCluster
+      LaunchType: FARGATE
+      DesiredCount: 1
+      TaskDefinition: !Ref TaskDefinition
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+            SecurityGroups:
+              - Fn::ImportValue: !Sub ecssgid
+            Subnets:
+              -  Fn::ImportValue: !Sub pubsubnet1id
+              -  Fn::ImportValue: !Sub pubsubnet2id
+            AssignPublicIp: ENABLED

@@ -1,0 +1,28 @@
+Parameters:
+  VersionId:
+    Type: String
+    Description: Enter VersionId
+Resources:
+  BasicDeploymentStrategy:
+    Type: AWS::AppConfig::DeploymentStrategy
+    Properties:
+      Name: "MyTestDeploymentStrategy"
+      Description: "A sample test deployment strategy."
+      DeploymentDurationInMinutes: 3
+      FinalBakeTimeInMinutes: 4
+      GrowthFactor: 10
+      GrowthType: LINEAR
+      ReplicateTo: NONE
+
+  BasicDeployment:
+    Type: AWS::AppConfig::Deployment
+    DependsOn: BasicDeploymentStrategy
+    Properties:
+      ApplicationId: !ImportValue appid
+      EnvironmentId: !ImportValue envid
+      DeploymentStrategyId: !Ref BasicDeploymentStrategy
+      ConfigurationProfileId: !ImportValue confproid
+      ConfigurationVersion: !Ref VersionId
+      Description: 'My test deployment'
+
+

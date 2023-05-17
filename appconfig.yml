@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  ApplicationName:
+    Type: String
+    Description: Name of the AppConfig application
+  EnvironmentName:
+    Type: String
+    Description: Name of the AppConfig environment
+  ConfigProfileName:
+    Type: String
+    Description: Name of the AppConfig configuration profile
+  ServiceRoleName:
+    Type: String
+    Description: Name of the service role for S3 access
+  S3Url:
+    Type: String
+    Description: Enter S3 URL for Conf file
+
+Resources:
+  AppConfigApplication:
+    Type: 'AWS::AppConfig::Application'
+    Properties:
+      Name: !Ref ApplicationName
+  AppConfigEnvironment:
+    Type: 'AWS::AppConfig::Environment'
+    Properties:
+      ApplicationId: !Ref AppConfigApplication
+      Name: !Ref EnvironmentName
+  AppConfigConfigProfile:
+    Type: 'AWS::AppConfig::ConfigurationProfile'
+    Properties:
+      ApplicationId: !Ref AppConfigApplication
+      Name: !Ref ConfigProfileName
+      LocationUri: !Ref S3Url
+      RetrievalRoleArn: !GetAtt ServiceRole.Arn
+  ServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Ref ServiceRoleName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [appconfig.amazonaws.com]
+            Action: ['sts:AssumeRole']
+      Policies:
+        - PolicyName: S3AccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - '*'
+                  - 's3:GetObject'
+                  - 's3:PutObject'
+                Resource: '*'
+
+Outputs:
+  AppConfigApplicationId:
+    Description: ID of the AppConfig Application
+    Value: !Ref AppConfigApplication
+    Export:
+      Name: appid
+
+  AppConfigConfigurationProfileId:
+    Description: ID of the AppConfig Configuration Profile
+    Value: !Ref AppConfigConfigProfile
+    Export:
+      Name: confproid
+      
+  AppConfigEnvironmentId:
+    Description: ID of the AppConfig Environment
+    Value: !Ref AppConfigEnvironment
+    Export:
+      Name: envid
