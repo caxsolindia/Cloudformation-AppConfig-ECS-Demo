@@ -1,2 +1,1 @@
-# Cloudformation-AppConfig-ECS-Demo
-Cloudformation-AppConfig-ECS-Demo
+# CloudFormation-Based Setup of AWS AppConfig and ECS Integration for Application Configuration Management
