@@ -1,7 +1,7 @@
 # CloudFormation-Based Setup of AWS AppConfig and ECS Integration for Application Configuration Management
 
 
-![image](https://github.com/caxsolindia/Cloudformation-AppConfig-ECS-Demo/assets/115705180/c4bce18b-1933-42b1-bd71-d5ecf532909c)
+![image](https://github.com/caxsolindia/Cloudformation-AppConfig-ECS-Demo/assets/115705180/73b0842a-86c8-46e2-ad73-675b6ad1ec83)
 
 
 The provided YAML code is a CloudFormation script that sets up AWS AppConfig and integrates it with ECS (Elastic Container Service). It consists of four sections, each defining a CloudFormation stack for different components of the setup:
