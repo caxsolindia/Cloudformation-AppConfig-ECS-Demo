@@ -14,10 +14,10 @@ The provided YAML code is a CloudFormation script that sets up AWS AppConfig and
 
 4. deployment.yml: This script sets up a deployment strategy and creates a deployment for the AWS AppConfig resources.
 
-### Stage No 1
+### Stage 1
 - launch main.yml file that setup vpc,appconfig,ecs 
 
-### Stages 2 
+### Stage 2 
 - Launch deployment.yml file if you want to deploy your latest configuration. 
 
 To use this CloudFormation script, you can create a new CloudFormation stack and provide the YAML code as the template. The stack will deploy the necessary resources and set up the integration between AWS AppConfig and ECS.
